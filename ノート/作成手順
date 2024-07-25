@@ -642,3 +642,25 @@
 
  2.ブラウザで正しく動くか確認した
     ok
+
+
+動作確認後、以下がうまくいってなかったので修正
+1.コメントフォームを空のまま投稿しようとすると、投稿できずにそのページに留まること
+  そのページに留まらず、エラーページに遷移してしまいます。
+  comments_controller.rb
+    def create
+      @comment = Comment.new(comment_params)
+      if @comment.save
+        redirect_to prototype_path(@comment.prototype)
+      else
+        @prototype = @comment.prototype
+        @comments = @prototype.comments
+        render 'prototypes/show'
+      end
+    end
+
+2.ログイン・ログアウトの状態に関わらず、各ページのユーザー名をクリックすると、ユーザーの詳細ページへ遷移すること
+  プロトタイプ詳細ページの投稿者名をクリックすると、トップページに遷移します。
+  ユーザーの詳細ページへ遷移するよう修正しましょう。
+    prototypes/show.html.erb
+      7行目のroot_pathをuser_path(@prototype.user)に修正
